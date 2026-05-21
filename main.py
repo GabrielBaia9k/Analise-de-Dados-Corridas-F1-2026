@@ -22,10 +22,9 @@ app_ui = ui.page_fluid(
     ui.hr(),
     ui.hr(),
     ui.p(
-        ui.small(
-            "Dataset original via [Nome do Autor/Repo] sob licença GPLv3. ",
-            ui.a("Acesse o repositório orginal", href="URL_DO_REPO")
-        )
+        {"style": "font-size: 0.8rem; color: gray;"}, # Adiciona estilo CSS inline para ficar "small"
+        "Dataset original por toUpperCase78 sob licença GPLv3. ",
+        ui.a("Acesse o repositório orginal", href="https://github.com/toUpperCase78/formula1-datasets/tree/master")
     )
 )
 
