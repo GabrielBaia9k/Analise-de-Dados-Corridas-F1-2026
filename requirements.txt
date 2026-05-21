@@ -1,0 +1,5 @@
+pacotes necessários para o projeto:
+
+pip install shiny
+pip install pandas
+pip install matplotlib
