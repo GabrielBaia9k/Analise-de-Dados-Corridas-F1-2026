@@ -1,5 +1,10 @@
 pacotes necessários para o projeto:
 
+pip install shiny pandas numpy plotly shinywidgets
+
 pip install shiny
 pip install pandas
 pip install matplotlib
+pip install numpy
+pip install plotly
+pip install shinywidgets

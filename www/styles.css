@@ -1,0 +1,384 @@
+/* www/styles.css - Tema F1 Dark Mode */
+
+/* ===== 1. TEMA GLOBAL ESCURO ===== */
+html, body {
+    background-color: #15151e !important;
+    color: #ffffff !important;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Força texto branco em TODOS os elementos (sobrescreve Bootstrap/Shiny) */
+body * {
+    color: #ffffff !important;
+}
+
+/* ===== 2. SIDEBAR - OVERRIDE BSLIB ===== */
+.bslib-sidebar-layout {
+    --_sidebar-bg: #1f1f2b !important;
+    --_sidebar-fg: #ffffff !important;
+    --bslib-sidebar-bg: #1f1f2b !important;
+    --bslib-sidebar-fg: #ffffff !important;
+}
+
+aside.sidebar, .sidebar {
+    background-color: #1f1f2b !important;
+    border-right: 1px solid #333 !important;
+}
+
+aside.sidebar .sidebar-content {
+    padding-top: 50px !important;
+}
+
+/* ===== 3. BOTÕES RADIO ESTILIZADOS (CAIXAS F1) ===== */
+/* Esconde inputs radio nativos */
+input[type="radio"] {
+    position: absolute !important;
+    opacity: 0 !important;
+    width: 0 !important;
+    height: 0 !important;
+    pointer-events: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* Labels como caixas clicáveis */
+label.form-check-label, 
+.form-check > label,
+aside label {
+    display: block !important;
+    width: 100% !important;
+    padding: 15px 20px !important;
+    margin-bottom: 15px !important;
+    background-color: #2b2b3b !important;
+    border-left: 4px solid transparent !important;
+    border-radius: 4px !important;
+    font-size: 1.1rem !important;
+    font-weight: 600 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1px !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+    color: #ccc !important;
+    box-sizing: border-box !important;
+}
+
+/* Hover */
+label.form-check-label:hover, 
+.form-check > label:hover,
+aside label:hover {
+    background-color: #38384a !important;
+    border-left: 4px solid #E10600 !important;
+    color: #fff !important;
+}
+
+/* Estado Ativo/Selecionado */
+input[type="radio"]:checked + label,
+input[type="radio"]:checked + span + label {
+    background-color: #E10600 !important;
+    color: #fff !important;
+    border-left: 4px solid #fff !important;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* ===== 4. TÍTULOS DAS PÁGINAS ===== */
+h2, h3 {
+    border-left: 5px solid #E10600;
+    padding-left: 15px;
+    color: #f1f1f1 !important;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 20px;
+}
+
+/* ===== 5. TABELAS / DATAFRAMES ===== */
+.table, .shiny-data-grid, table {
+    color: #fff !important;
+    background-color: transparent !important;
+}
+
+/* Cantos arredondados — via wrapper que contém a tabela */
+.shiny-data-grid {
+    border-radius: 8px !important;
+    overflow: hidden !important;
+}
+
+.table th, .table td, 
+.shiny-data-grid th, .shiny-data-grid td,
+table th, table td {
+    border-color: #444 !important;
+    color: #fff !important;
+    background-color: transparent !important;
+    padding: 12px !important;
+}
+
+.table-striped tbody tr:nth-of-type(odd),
+.shiny-data-grid tbody tr:nth-of-type(odd) {
+    background-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+.shiny-data-grid {
+    border-radius: 8px !important;
+    overflow: hidden !important;
+    max-height: 380px !important;      /* ← ADICIONE: altura máxima fixa */
+    overflow-y: auto !important;       /* ← ADICIONE: scroll vertical quando necessário */
+}
+/* Remove texto de paginação */
+.shiny-data-grid + .data-grid-pagination {
+    display: none !important;
+}
+
+/* ===== 6. SCROLLBAR PERSONALIZADA ===== */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+::-webkit-scrollbar-track {
+    background: #15151e; 
+}
+::-webkit-scrollbar-thumb {
+    background: #333; 
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #E10600; 
+}
+
+/* Remove o rótulo vazio do grupo de radio buttons */
+.shiny-input-radiogroup > label.control-label:first-child {
+    display: none !important;
+}
+
+/* ===============================================================================================
+   ╔══════════════════════════════════════════════════════════════════════════════════════════════╗
+   ║                    SEÇÃO 7 — DROPDOWN / SELECT INPUT — TEMPLATE F1 DARK MODE                 ║
+   ╚══════════════════════════════════════════════════════════════════════════════════════════════╝
+   
+   📌 GUIA DE IMPLEMENTAÇÃO:
+   ─────────────────────────
+   Este CSS cobre 2 cenários. No PyShiny, `ui.input_select` NÃO usa Selectize.js por padrão.
+   O parâmetro `selectize` é `False` por default (diferente do Shiny para R).
+   
+   ✅ Para usar este CSS com TODOS os recursos visuais (recomendado):
+   
+       ui.input_select(
+           "id_do_select",
+           label="Label:",
+           choices=lista_opcoes,
+           selected=lista_opcoes[0],
+           selectize=True          # ← OBRIGATÓRIO para ativar o Selectize.js
+       )
+   
+   ⚠️  Sem `selectize=True`, o elemento é um <select> HTML nativo.
+       As regras da subseção 7A NÃO se aplicam. Apenas a subseção 7B (fallback).
+       O <select> nativo tem limitações: dropdown do SO não pode ser estilizado via CSS.
+   
+   📦 ESTRUTURA DO DOM (com selectize=True):
+   ──────────────────────────────────────────
+       div.shiny-input-container
+       ├── label.control-label          → "Selecione a Corrida:"
+       └── div
+           └── div.selectize-control.single
+               ├── div.selectize-input   → CAIXA visível (fundo escuro, borda, texto)
+               │   └── input[type=text]  → Campo de busca/filtro (digitável)
+               └── div.selectize-dropdown → MENU suspenso (anexado ao <body>)
+                   └── div.selectize-dropdown-content
+                       └── div.option    → Cada opção do menu
+   
+   📦 ESTRUTURA DO DOM (sem selectize=True — nativo):
+   ──────────────────────────────────────────────────
+       div.shiny-input-container
+       ├── label.control-label          → "Selecione a Corrida:"
+       └── select.shiny-input-select    → <select> HTML nativo
+           └── option                   → Cada opção (estilo limitado pelo SO)
+   
+   ⚡ DICA RÁPIDA: Se o dropdown aparecer com fundo branco e texto branco (sem contraste),
+   é 99% de chance de ser `selectize=True` faltando no Python.
+   =============================================================================================== */
+
+/* ===== 7A. SELECTIZE.JS — ESTILOS PRINCIPAIS (requer selectize=True no Python) ===== */
+
+/* Container externo do selectize (wrap gerado pelo JS) */
+.selectize-control {
+    position: relative;
+}
+
+/* A CAIXA de exibição — a parte sempre visível do dropdown */
+/* É aqui que o valor selecionado aparece e onde o usuário clica para abrir o menu */
+.selectize-input,
+.selectize-control.single .selectize-input {
+    background-color: #2b2b3b !important;
+    border: 1px solid #444 !important;
+    color: #fff !important;
+    border-radius: 4px !important;
+    padding: 10px 15px !important;
+    font-size: 1rem !important;
+    min-height: 45px !important;
+
+    /* Remove o box-shadow/borda padrão do Bootstrap que polui o visual escuro */
+    box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+
+    /* Garante que o fundo escuro fique visível mesmo com temas claros do navegador */
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+}
+
+/* Estado FOCADO — quando o usuário clica na caixa */
+/* Borda vermelha F1 + glow sutil para feedback visual */
+.selectize-input.focus,
+.selectize-control.single .selectize-input.focus {
+    border-color: #E10600 !important;
+    box-shadow: 0 0 0 2px rgba(225, 6, 0, 0.2) !important;
+}
+
+/* Campo de TEXTO interno (usado para filtrar opções digitando) */
+.selectize-input input[type="text"] {
+    color: #fff !important;
+    background: transparent !important;
+    border: none !important;
+    outline: none !important;
+    font-size: 1rem !important;
+}
+
+/* Placeholder dentro do campo de texto */
+.selectize-input input[type="text"]::placeholder {
+    color: #888 !important;
+    opacity: 1 !important;
+}
+
+/* Item SELECIONADO (aparece como uma "pílula" dentro da caixa) */
+.selectize-input .item {
+    color: #fff !important;
+    background: transparent !important;
+}
+
+/* SETA do dropdown (triângulo ▼ à direita) */
+/* Por padrão é cinza; substituímos por vermelho F1 para combinar com o tema */
+.selectize-control.single .selectize-input::after {
+    border-color: #E10600 transparent transparent transparent !important;
+}
+
+/* ===== 7A-2. MENU SUSPENSO (DROPDOWN) ===== */
+
+/* ⚠️ IMPORTANTE: O menu dropdown do Selectize.js é renderizado FORA do container,
+   anexado diretamente ao <body>. Por isso ele NÃO herda estilos de containers pais.
+   As regras abaixo precisam ser "globais" o suficiente para alcançá-lo. */
+
+/* Fundo do menu suspenso */
+.selectize-dropdown {
+    background-color: #2b2b3b !important;
+    border: 1px solid #444 !important;
+    border-top: none !important;          /* Evita borda dupla com a caixa */
+    color: #fff !important;
+    z-index: 9999 !important;            /* Garante que fique sobre outros elementos */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4) !important;
+    border-radius: 0 0 4px 4px !important;
+}
+
+/* Container interno do menu (contém as opções) */
+.selectize-dropdown-content {
+    max-height: 300px !important;        /* Limita altura + scroll se necessário */
+    overflow-y: auto !important;
+}
+
+/* Cada OPÇÃO individual dentro do menu */
+.selectize-dropdown .option {
+    color: #fff !important;
+    padding: 10px 15px !important;
+    cursor: pointer !important;
+    transition: background-color 0.15s ease !important;
+}
+
+/* HOVER — mouse sobre uma opção */
+.selectize-dropdown .option:hover {
+    background-color: #38384a !important;
+}
+
+/* Opção ATIVA/SELECIONADA (navegação por teclado ou clique) */
+.selectize-dropdown .option.active,
+.selectize-dropdown .option.selected {
+    background-color: #E10600 !important;
+    color: #fff !important;
+}
+
+/* ===== 7B. FALLBACK — <select> HTML NATIVO (quando selectize=False ou não especificado) ===== */
+
+/* ⚠️  LIMITAÇÕES DO <select> NATIVO:
+   - O menu dropdown é renderizado pelo SISTEMA OPERACIONAL
+   - Não é possível estilizar <option> com CSS (cores, hover, etc.)
+   - O fundo das opções será o padrão do SO (claro no Windows, escuro no macOS dark mode)
+   - Apenas a caixa em si (parte fechada) pode ser estilizada */
+
+.shiny-input-container select,
+select.shiny-input-select {
+    background-color: #2b2b3b !important;
+    border: 1px solid #444 !important;
+    color: #fff !important;
+    border-radius: 4px !important;
+    padding: 10px 15px !important;
+    font-size: 1rem !important;
+    min-height: 45px !important;
+    width: 100% !important;
+    outline: none !important;
+    cursor: pointer !important;
+
+    /* Remove a seta padrão do SO (opcional — comentar se quiser manter a seta nativa) */
+    /* -webkit-appearance: none !important; */
+    /* -moz-appearance: none !important; */
+}
+
+/* Foco no <select> nativo */
+.shiny-input-container select:focus,
+select.shiny-input-select:focus {
+    border-color: #E10600 !important;
+    box-shadow: 0 0 0 2px rgba(225, 6, 0, 0.2) !important;
+}
+
+/* Opções dentro do <select> nativo — ESTILO LIMITADO PELO SO */
+/* Estas regras funcionam apenas no Firefox. Chrome/Edge/Safari ignoram. */
+.shiny-input-container select option,
+select.shiny-input-select option {
+    background-color: #2b2b3b !important;
+    color: #fff !important;
+    padding: 8px !important;
+}
+
+/* ===== 7C. LABEL DO INPUT SELECT (compartilhado entre selectize e nativo) ===== */
+
+/* O label "Selecione a Corrida:" fica dentro de .shiny-input-container */
+/* Ele NÃO é afetado pelas regras da sidebar (aside label) */
+.control-label,
+.shiny-input-container > label {
+    color: #fff !important;
+    font-weight: 600 !important;
+    margin-bottom: 10px !important;
+    display: block !important;
+    font-size: 1rem !important;
+}
+
+/* ===============================================================================================
+   📋 CHECKLIST DE TROUBLESHOOTING:
+   ─────────────────────────────────
+   ☐ 1. `selectize=True` está presente no Python?          → Sem ele, só 7B se aplica.
+   ☐ 2. O arquivo styles.css está sendo carregado?         → Ver console do navegador (F12).
+   ☐ 3. Outros elementos recebem o CSS?                    → Se sim, o arquivo carrega.
+   ☐ 4. Texto branco em fundo branco?                      → `selectize=True` está faltando.
+   ☐ 5. Menu dropdown com fundo claro?                     → Seletor .selectize-dropdown não alcança (renderizado fora do container).
+   ☐ 6. Label do select está oculto?                       → Regra .form-group > label pode estar escondendo (ver linha ~123).
+   
+   🔄 PARA NOVOS MÓDULOS — COPIE E COLE ESTE PADRÃO:
+   ────────────────────────────────────────────────────
+   
+   @module.ui
+   def meu_modulo_ui(opcoes=None):
+       choices = opcoes if opcoes else ["Carregando..."]
+       return ui.div(
+           ui.input_select(
+               "id_select",            # ID único do módulo
+               label="Label Visível:",
+               choices=choices,
+               selected=choices[0] if choices else None,
+               selectize=True          # ← NUNCA ESQUECER
+           ),
+       )
+   =============================================================================================== */
