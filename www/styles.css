@@ -90,6 +90,52 @@ h2, h3 {
     margin-bottom: 20px;
 }
 
+/* ===== 4A. GRÁFICOS PLOTLY ===== */
+.grafico-container {
+    width: 100%;
+    margin-top: 20px;
+    padding-top: 15px;
+    border-radius: 8px;
+    overflow: visible;
+}
+
+.grafico-container .js-plotly-plot,
+.grafico-container .plotly {
+    border-radius: 8px;
+}
+
+.grafico-container .modebar {
+    display: none !important;
+}
+
+.grafico-container .modebar-group {
+    background-color: rgba(21, 21, 30, 0.85) !important;
+    border-radius: 4px !important;
+}
+
+/* ===== 4B. HOVER UNIFICADO PLOTLY ===== */
+.grafico-container .js-plotly-plot .hoverlayer .hovertext text,
+.grafico-container .js-plotly-plot .hoverlayer .axistext text {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+}
+
+.grafico-container .js-plotly-plot .hoverlayer .hovertext {
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.4));
+}
+
+/* O hover unificado reutiliza a legenda do Plotly e pode criar este indicador. */
+.grafico-container .js-plotly-plot .hoverlayer g.legend rect.scrollbar,
+.grafico-container .js-plotly-plot .hoverlayer rect.scrollbar {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
+
+.grafico-container .js-plotly-plot .hoverlayer .spikeline {
+    display: none !important;
+}
+
 /* ===== 5. TABELAS / DATAFRAMES ===== */
 .table, .shiny-data-grid, table {
     color: #fff !important;
@@ -125,6 +171,23 @@ table th, table td {
 /* Remove texto de paginação */
 .shiny-data-grid + .data-grid-pagination {
     display: none !important;
+}
+
+/* ===== 5A. TABELAS DE CLASSIFICAÇÃO ===== */
+/* Aplica a qualquer tabela de classificação (pilotos/construtores).
+   Basta adicionar class_="tabela-classificacao" no container. */
+
+.tabela-classificacao .shiny-data-grid td:first-child,
+.tabela-classificacao .shiny-data-grid th:first-child {
+    width: 70px !important;
+    min-width: 70px !important;
+    max-width: 70px !important;
+    text-align: center !important;
+}
+
+.tabela-classificacao .shiny-data-grid table {
+    table-layout: fixed !important;
+    width: 100% !important;
 }
 
 /* ===== 6. SCROLLBAR PERSONALIZADA ===== */

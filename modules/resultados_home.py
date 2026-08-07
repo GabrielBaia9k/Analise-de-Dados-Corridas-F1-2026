@@ -1,70 +1,27 @@
 import pandas as pd
-import os
+import plotly.express as px
+import plotly.graph_objects as go
 from shiny import ui, render, module
+from shinywidgets import output_widget, render_widget
 
-
-# =====================================================================
-# MAPEAMENTO: nome do time no CSV → nome do arquivo de logo
-# =====================================================================
-TEAM_LOGO_MAP = {
-    "Ferrari":                      "team_ferrari-normalized-logo.avif",
-    "Mercedes":                     "team_2026-mercedes-normalized-logo.avif",
-    "McLaren Mercedes":             "team_mclaren-normalized-logo.avif",
-    "Red Bull Racing Red Bull Ford":"team_rbr-normalized-logo.avif",
-    "Haas Ferrari":                 "team_haas-normalized-logo.avif",
-    "Racing Bulls Red Bull Ford":   "team_rb-normalized-logo.avif",
-    "Audi":                         "team_audi-normalized-logo.avif",
-    "Alpine Mercedes":              "team_alpine-normalized-logo.avif",
-    "Williams Mercedes":            "team_2026-williams-normalized-logo.avif",
-    "Cadillac Ferrari":             "team_cadillac-normalized-logo.avif",
-    "Aston Martin Honda":           "team_aston-martin-normalized-logo.avif",
-}
-
-LOGO_DIR = "Team Logos"   # ← agora existe em www/Team Logos/
-
-
-def build_team_styles(df: pd.DataFrame, team_col_idx: int) -> list:
-    """
-    Constrói a lista de estilos para aplicar background-image com o logo
-    em cada célula da coluna de time.
-    
-    Args:
-        df: DataFrame com coluna 'Team' (nomes originais!)
-        team_col_idx: índice da coluna Team (2=pilotos, 1=construtores)
-    """
-    styles_list = []
-    for row_idx, team in enumerate(df['Team']):
-        filename = TEAM_LOGO_MAP.get(team)
-        if filename:
-            styles_list.append({
-                "rows": [row_idx],
-                "cols": [team_col_idx],
-                "style": {
-                    "background-image": f"url('{LOGO_DIR}/{filename}')",
-                    "background-size": "contain",
-                    "background-repeat": "no-repeat",
-                    "background-position": "center",
-                    "color": "transparent",        # ← esconde o texto
-                    "min-width": "60px",
-                    "min-height": "30px",
-                },
-            })
-    return styles_list
+from utils.team_logos import build_team_styles
+from utils.team_colors import TEAM_COLOR_MAP
+from utils.cumulative_data import build_cumulative_pilotos, build_cumulative_construtores
 
 
 def calcular_classificacao_pilotos(df: pd.DataFrame) -> pd.DataFrame:
     classificacao = df.groupby(['Driver', 'Team'])['Points'].sum().reset_index()
     classificacao = classificacao.sort_values('Points', ascending=False).reset_index(drop=True)
-    classificacao.insert(0, 'Position', range(1, len(classificacao) + 1))
-    # ← NÃO zera 'Team' aqui — o build_team_styles precisa dos nomes!
+    classificacao.insert(0, 'Posição', range(1, len(classificacao) + 1))
+    classificacao = classificacao.rename(columns={'Driver': 'Piloto', 'Team': 'Equipe', 'Points': 'Pontos'})
     return classificacao
 
 
 def calcular_classificacao_construtores(df: pd.DataFrame) -> pd.DataFrame:
     classificacao = df.groupby('Team')['Points'].sum().reset_index()
     classificacao = classificacao.sort_values('Points', ascending=False).reset_index(drop=True)
-    classificacao.insert(0, 'Position', range(1, len(classificacao) + 1))
-    # ← NÃO zera 'Team' aqui — o build_team_styles precisa dos nomes!
+    classificacao.insert(0, 'Posição', range(1, len(classificacao) + 1))
+    classificacao = classificacao.rename(columns={'Team': 'Equipe', 'Points': 'Pontos'})
     return classificacao
 
 
@@ -74,11 +31,27 @@ def resultados_home_ui():
         ui.layout_columns(
             ui.div(
                 ui.h4("Classificação de Pilotos"),
-                ui.output_data_frame("tabela_classificacao"),
+                ui.div(
+                    ui.output_data_frame("tabela_classificacao"),
+                    class_="tabela-classificacao",
+                    style="margin-bottom: 20px;"
+                ),
+                ui.div(
+                    output_widget("grafico_pilotos"),
+                    class_="grafico-container",
+                ),
             ),
             ui.div(
                 ui.h4("Classificação de Construtores"),
-                ui.output_data_frame("tabela_construtores"),
+                ui.div(
+                    ui.output_data_frame("tabela_construtores"),
+                    class_="tabela-classificacao",
+                    style="margin-bottom: 20px;"
+                ),
+                ui.div(
+                    output_widget("grafico_construtores"),
+                    class_="grafico-container",
+                ),
             ),
             col_widths=[6, 6],
         ),
@@ -91,13 +64,11 @@ def resultados_home_server(input, output, session, df):
     df_pilotos = calcular_classificacao_pilotos(df)
     df_construtores = calcular_classificacao_construtores(df)
 
-    # 🔧 CORREÇÃO: constrói estilos ANTES de zerar a coluna
     pilotos_styles = build_team_styles(df_pilotos, team_col_idx=2)
     construtores_styles = build_team_styles(df_construtores, team_col_idx=1)
 
-    # 🔧 SÓ AGORA zera a coluna Team (o texto fica transparente via CSS)
-    df_pilotos['Team'] = ""
-    df_construtores['Team'] = ""
+    df_pilotos['Equipe'] = ""
+    df_construtores['Equipe'] = ""
 
     @render.data_frame
     def tabela_classificacao():
@@ -114,3 +85,160 @@ def resultados_home_server(input, output, session, df):
             styles=construtores_styles,
             summary=False,
         )
+
+    @render_widget
+    def grafico_pilotos():
+        df_cumul = build_cumulative_pilotos(df)
+        ordem = df_cumul['Corrida'].unique().tolist()
+
+        #ordena pilotos no eixo Y para o mouseover do eixo X
+        ordem_pilotos = df_cumul.groupby('Piloto')['Pontos'].max().sort_values(ascending=False)
+        df_cumul['Piloto'] = pd.Categorical(df_cumul['Piloto'], categories=ordem_pilotos.index, ordered=True)
+        df_cumul = df_cumul.sort_values(['Piloto', 'Ordem'])
+
+        fig = px.line(
+            df_cumul,
+            x='Corrida',
+            y='Pontos',
+            color='Equipe',
+            line_group='Piloto',
+            hover_name='Piloto',
+            #hover_data={'Pontos': ':.0f'},
+            color_discrete_map=TEAM_COLOR_MAP,
+            category_orders={"Corrida": ordem, "Piloto": ordem_pilotos.index.tolist()},
+            markers=True,
+        )
+
+        fig.update_layout(
+            template='plotly_dark',
+            paper_bgcolor='rgba(0,0,0,0)',
+            plot_bgcolor='rgba(0,0,0,0)',
+            height=600,
+            margin=dict(l=10, r=50, t=80, b=10),
+            hoverlabel=dict(
+                bgcolor='#1f1f2b',
+                bordercolor='#444',
+                font=dict(color='#ffffff', size=12),
+                align='left',
+            ),
+            legend=dict(
+                orientation='h',
+                yanchor='bottom',
+                y=1.02,
+                xanchor='right',
+                x=1,
+                font=dict(color='#ffffff', size=11),
+                title=None,
+            ),
+            xaxis=dict(
+                showgrid=False,
+                zeroline=False,
+                tickfont=dict(color='#ffffff', size=11),
+                title=None,
+                unifiedhovertitle=dict(text='<b>%{x}</b>'),
+                showspikes=False,
+            ),
+            yaxis=dict(
+                showgrid=True,
+                gridcolor='rgba(255,255,255,0.08)',
+                zeroline=False,
+                tickfont=dict(color='#ffffff', size=11),
+                title=None,
+                showspikes=False,
+            ),
+            dragmode='pan',
+            modebar=dict(
+                orientation='v',
+                bgcolor='rgba(21, 21, 30, 0.85)',
+                color='#ffffff',
+                activecolor='#E10600',
+                remove=['select2d', 'lasso2d', 'zoom2d', 'resetScale2d']
+            ),
+            hovermode='x unified'
+        )
+        fig.update_traces(
+            hovertemplate='%{hovertext}  %{y:.0f}<extra></extra>'
+        )
+
+        return go.FigureWidget(fig)
+
+    @render_widget
+    def grafico_construtores():
+        df_cumul = build_cumulative_construtores(df)
+        ordem = df_cumul['Corrida'].unique().tolist()
+        ordem_equipes = (
+            df_cumul.groupby('Equipe')['Pontos']
+            .max()
+            .sort_values(ascending=False)
+            .index
+            .tolist()
+        )
+        df_cumul['Equipe'] = pd.Categorical(
+            df_cumul['Equipe'],
+            categories=ordem_equipes,
+            ordered=True,
+        )
+        df_cumul = df_cumul.sort_values(['Equipe', 'Ordem'])
+
+        fig = px.line(
+            df_cumul,
+            x='Corrida',
+            y='Pontos',
+            color='Equipe',
+            hover_name='Equipe',
+            color_discrete_map=TEAM_COLOR_MAP,
+            category_orders={"Corrida": ordem, "Equipe": ordem_equipes},
+            markers=True,
+        )
+
+        fig.update_layout(
+            template='plotly_dark',
+            paper_bgcolor='rgba(0,0,0,0)',
+            plot_bgcolor='rgba(0,0,0,0)',
+            height=600,
+            margin=dict(l=10, r=50, t=70, b=10),
+            hoverlabel=dict(
+                bgcolor='#1f1f2b',
+                bordercolor='#444',
+                font=dict(color='#ffffff', size=12),
+                align='left',
+            ),
+            legend=dict(
+                orientation='h',
+                yanchor='bottom',
+                y=1.02,
+                xanchor='right',
+                x=1,
+                font=dict(color='#ffffff', size=11),
+                title=None,
+            ),
+            xaxis=dict(
+                showgrid=False,
+                zeroline=False,
+                tickfont=dict(color='#ffffff', size=11),
+                title=None,
+                unifiedhovertitle=dict(text='<b>%{x}</b>'),
+                showspikes=False,
+            ),
+            yaxis=dict(
+                showgrid=True,
+                gridcolor='rgba(255,255,255,0.08)',
+                zeroline=False,
+                tickfont=dict(color='#ffffff', size=11),
+                title=None,
+                showspikes=False,
+            ),
+            dragmode='pan',
+            modebar=dict(
+                orientation='v',
+                bgcolor='rgba(21, 21, 30, 0.85)',
+                color='#ffffff',
+                activecolor='#E10600',
+                remove=['select2d', 'lasso2d', 'zoom2d', 'resetScale2d'],
+            ),
+            hovermode='x unified',
+        )
+        fig.update_traces(
+            hovertemplate='%{hovertext}  %{y:.0f}<extra></extra>'
+        )
+        return go.FigureWidget(fig)
