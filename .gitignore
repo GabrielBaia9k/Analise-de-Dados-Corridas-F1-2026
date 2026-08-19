@@ -4,6 +4,7 @@ enviroment.txt
 __pycache__/
 *.pyc
 *.pyo
+tui.json
 
 # Dados gerados pelo dashboard
 Dados Gerados/
