@@ -1,2 +1,16 @@
+# Ambientes e dependências
 enviroment.txt
+.venv/
 __pycache__/
+*.pyc
+*.pyo
+
+# Dados gerados pelo dashboard
+Dados Gerados/
+data/Dados Gerados/
+
+# Estados de ferramentas
+.ipynb_checkpoints/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
