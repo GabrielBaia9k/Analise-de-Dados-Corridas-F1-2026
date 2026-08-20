@@ -55,7 +55,7 @@
 
             Shiny.setInputValue(
                 hiddenInput.id,
-                { equipe: equipe, t: Date.now() },
+                JSON.stringify({ equipe: equipe, t: Date.now() }),
                 { priority: "event" }
             );
         });
@@ -63,7 +63,9 @@
 
     function bindH2HGraphs() {
         document
-            .querySelectorAll(".h2h-card .js-plotly-plot")
+            .querySelectorAll(
+                ".h2h-card .js-plotly-plot, .h2h-card .plotly-graph-div"
+            )
             .forEach(bindPlotlyGraph);
     }
 
@@ -74,6 +76,8 @@
         observer.observe(document.body, {
             childList: true,
             subtree: true,
+            attributes: true,
+            attributeFilter: ["class"],
         });
     }
 

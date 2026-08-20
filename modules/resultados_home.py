@@ -1,3 +1,5 @@
+import json
+
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
@@ -44,11 +46,13 @@ def resultados_home_ui():
     return ui.div(
         ui.layout_columns(
             ui.div(
-                ui.h4("Classificação de Pilotos"),
                 ui.div(
-                    ui.output_data_frame("tabela_classificacao"),
-                    class_="tabela-classificacao",
-                    style="margin-bottom: 20px;"
+                    ui.h4("Classificação de Pilotos", class_="classificacao-titulo"),
+                    ui.div(
+                        ui.output_data_frame("tabela_classificacao"),
+                        class_="tabela-classificacao tabela-classificacao-pilotos",
+                    ),
+                    class_="classificacao-card",
                 ),
                 ui.div(
                     output_widget("grafico_pilotos"),
@@ -56,11 +60,13 @@ def resultados_home_ui():
                 ),
             ),
             ui.div(
-                ui.h4("Classificação de Construtores"),
                 ui.div(
-                    ui.output_data_frame("tabela_construtores"),
-                    class_="tabela-classificacao",
-                    style="margin-bottom: 20px;"
+                    ui.h4("Classificação de Construtores", class_="classificacao-titulo"),
+                    ui.div(
+                        ui.output_data_frame("tabela_construtores"),
+                        class_="tabela-classificacao tabela-classificacao-construtores",
+                    ),
+                    class_="classificacao-card",
                 ),
                 ui.div(
                     output_widget("grafico_construtores"),
@@ -92,7 +98,7 @@ def resultados_home_ui():
                         ui.output_ui("h2h_detalhes"),
                         class_="h2h-detalhes",
                     ),
-                    col_widths=[6, 6],
+                    col_widths=[7, 5],
                     class_="h2h-layout",
                 ),
                 class_="h2h-card",
@@ -311,6 +317,12 @@ def resultados_home_server(input, output, session, df, df_tabela_classificacao,
         if not clique:
             return
 
+        if isinstance(clique, str):
+            try:
+                clique = json.loads(clique)
+            except json.JSONDecodeError:
+                clique = {'equipe': clique}
+
         equipe = clique.get('equipe') if isinstance(clique, dict) else clique
 
         if equipe in ordem_equipes_construtores:
@@ -466,13 +478,26 @@ def resultados_home_server(input, output, session, df, df_tabela_classificacao,
                 title=None,
                 showspikes=False,
             ),
-            dragmode='pan',
+            # O gráfico permanece clicável nas barras, mas sem pan, zoom,
+            # seleção ou hover interativo.
+            dragmode=False,
+            hovermode=False,
             modebar=dict(
                 orientation='v',
                 bgcolor='rgba(21, 21, 30, 0.85)',
                 color='#ffffff',
                 activecolor='#E10600',
-                remove=['select2d', 'lasso2d', 'zoom2d', 'resetScale2d'],
+                remove=[
+                    'select2d',
+                    'lasso2d',
+                    'zoom2d',
+                    'pan2d',
+                    'zoomIn2d',
+                    'zoomOut2d',
+                    'autoScale2d',
+                    'resetScale2d',
+                    'toImage',
+                ],
             ),
             showlegend=False,
             barmode='relative',

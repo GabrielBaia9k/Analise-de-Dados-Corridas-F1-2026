@@ -213,14 +213,91 @@ table th, table td {
 }
 
 /* ===== 5A. TABELAS DE CLASSIFICAÇÃO ===== */
-/* Aplica a qualquer tabela de classificação (pilotos/construtores).
-   Basta adicionar class_="tabela-classificacao" no container. */
+/* Painéis das classificações seguem o mesmo visual do painel H2H. */
+.classificacao-card {
+    background-color: #1f1f2b !important;
+    border: 1px solid #444 !important;
+    border-left: 4px solid #E10600 !important;
+    border-radius: 8px !important;
+    padding: 16px 18px !important;
+    margin-bottom: 20px !important;
+}
+
+.classificacao-titulo {
+    color: #ffffff !important;
+    font-weight: 700 !important;
+    margin: 0 0 12px !important;
+    border-left: 3px solid #E10600;
+    padding-left: 10px;
+    font-size: 1.15rem !important;
+}
+
+.classificacao-card .tabela-classificacao {
+    padding: 0 !important;
+    margin-bottom: 0 !important;
+}
+
+.classificacao-card .shiny-data-grid {
+    border: none !important;
+    border-radius: 0 !important;
+    max-height: 380px !important;
+    overflow-y: auto !important;
+}
+
+.classificacao-card .shiny-data-grid th,
+.classificacao-card .shiny-data-grid td {
+    border-color: transparent !important;
+    padding: 9px 10px !important;
+}
+
+.classificacao-card .shiny-data-grid th {
+    color: #999 !important;
+    background-color: transparent !important;
+    font-size: 0.78rem !important;
+    font-weight: 600 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+}
+
+.classificacao-card .shiny-data-grid td {
+    color: #bbb !important;
+    background-color: transparent !important;
+    font-size: 0.95rem !important;
+}
+
+.classificacao-card .shiny-data-grid tbody tr:nth-child(even) td {
+    background-color: rgba(255, 255, 255, 0.04) !important;
+}
+
+.classificacao-card .shiny-data-grid tbody tr:hover td {
+    background-color: rgba(225, 6, 0, 0.12) !important;
+}
+
+.tabela-classificacao-pilotos .shiny-data-grid td:nth-child(1),
+.tabela-classificacao-pilotos .shiny-data-grid th:nth-child(1),
+.tabela-classificacao-construtores .shiny-data-grid td:nth-child(1),
+.tabela-classificacao-construtores .shiny-data-grid th:nth-child(1) {
+    width: 55px !important;
+    min-width: 55px !important;
+    max-width: 55px !important;
+    text-align: center !important;
+}
+
+.tabela-classificacao-pilotos .shiny-data-grid td:nth-child(3),
+.tabela-classificacao-pilotos .shiny-data-grid th:nth-child(3),
+.tabela-classificacao-construtores .shiny-data-grid td:nth-child(2),
+.tabela-classificacao-construtores .shiny-data-grid th:nth-child(2) {
+    width: 64px !important;
+    min-width: 64px !important;
+    max-width: 64px !important;
+    text-align: center !important;
+}
 
 .tabela-classificacao .shiny-data-grid td:first-child,
 .tabela-classificacao .shiny-data-grid th:first-child {
-    width: 70px !important;
-    min-width: 70px !important;
-    max-width: 70px !important;
+    width: 55px !important;
+    min-width: 55px !important;
+    max-width: 55px !important;
     text-align: center !important;
 }
 
