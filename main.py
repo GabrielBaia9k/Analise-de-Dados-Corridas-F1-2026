@@ -73,6 +73,7 @@ app_ui = ui.page_sidebar(
     ),
     ui.include_css("www/styles.css"),
     ui.include_js("www/hover_logos.js"),
+    ui.include_js("www/h2h_click.js"),
     ui.output_ui("conteudo_pagina")
 )
 

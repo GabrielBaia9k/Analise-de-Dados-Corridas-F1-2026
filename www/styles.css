@@ -495,9 +495,26 @@ select.shiny-input-select option {
     outline-offset: -2px !important;
 }
 
-/* ===== 8B. PAINEL DE DETALHES (DROPDOWN) ===== */
+/* ===== 8B. PAINEL DE DETALHES ===== */
+.h2h-oculto {
+    display: none !important;
+}
+
+.h2h-layout {
+    align-items: start !important;
+}
+
+.h2h-layout .grafico-container {
+    margin-top: 0;
+    padding-top: 0;
+}
+
 .h2h-detalhes {
-    margin-top: 15px;
+    margin-top: 0;
+}
+
+.h2h-layout .h2h-detalhes-painel {
+    margin-top: 0 !important;
 }
 
 .h2h-detalhes-painel {
@@ -567,6 +584,16 @@ select.shiny-input-select option {
 
 .h2h-detalhes-vazio {
     margin-top: 10px;
+}
+
+@media (max-width: 768px) {
+    .h2h-layout {
+        grid-template-columns: minmax(0, 1fr) !important;
+    }
+
+    .h2h-layout .h2h-detalhes {
+        margin-top: 15px;
+    }
 }
 
 /* ===============================================================================================

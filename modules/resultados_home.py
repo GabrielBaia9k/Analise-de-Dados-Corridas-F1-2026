@@ -54,28 +54,6 @@ def resultados_home_ui():
                     output_widget("grafico_pilotos"),
                     class_="grafico-container",
                 ),
-                ui.div(
-                    ui.h4("Head-to-Head"),
-                    ui.div(
-                        ui.navset_tab(
-                            ui.nav_panel("Corridas", value="corridas"),
-                            ui.nav_panel("Sprint", value="sprint"),
-                            ui.nav_panel("Qualy", value="qualy"),
-                            ui.nav_panel("Sprint Qualy", value="sprint_qualy"),
-                            id="h2h_sessao",
-                        ),
-                        ui.div(
-                            output_widget("grafico_h2h"),
-                            class_="grafico-container",
-                        ),
-                        ui.div(
-                            ui.output_ui("h2h_detalhes"),
-                            class_="h2h-detalhes",
-                        ),
-                        class_="h2h-card",
-                        style="margin-top: 30px;",
-                    ),
-                ),
             ),
             ui.div(
                 ui.h4("Classificação de Construtores"),
@@ -90,6 +68,36 @@ def resultados_home_ui():
                 ),
             ),
             col_widths=[6, 6],
+        ),
+        ui.div(
+            ui.h4("Head-to-Head"),
+            ui.div(
+                ui.navset_tab(
+                    ui.nav_panel("Corridas", value="corridas"),
+                    ui.nav_panel("Sprint", value="sprint"),
+                    ui.nav_panel("Qualy", value="qualy"),
+                    ui.nav_panel("Sprint Qualy", value="sprint_qualy"),
+                    id="h2h_sessao",
+                ),
+                ui.div(
+                    ui.input_text("h2h_clique", label="", value=""),
+                    class_="h2h-oculto",
+                ),
+                ui.layout_columns(
+                    ui.div(
+                        output_widget("grafico_h2h"),
+                        class_="grafico-container",
+                    ),
+                    ui.div(
+                        ui.output_ui("h2h_detalhes"),
+                        class_="h2h-detalhes",
+                    ),
+                    col_widths=[6, 6],
+                    class_="h2h-layout",
+                ),
+                class_="h2h-card",
+                style="margin-top: 30px;",
+            ),
         ),
         style="padding: 20px;"
     )
@@ -279,6 +287,35 @@ def resultados_home_server(input, output, session, df, df_tabela_classificacao,
         df_sessao = SESSOES.get(sessao, df_race)
         return build_h2h(df_sessao, sessao)
 
+    @reactive.effect
+    def selecionar_primeira_equipe():
+        placar, _detalhes = dados_h2h()
+        equipes_disponiveis = set(placar['Equipe'])
+
+        primeira_equipe = next(
+            (
+                equipe
+                for equipe in ordem_equipes_construtores
+                if equipe in equipes_disponiveis
+            ),
+            None,
+        )
+
+        equipe_selecionada.set(primeira_equipe)
+
+    @reactive.effect
+    @reactive.event(input.h2h_clique)
+    def atualizar_equipe_clicada():
+        clique = input.h2h_clique()
+
+        if not clique:
+            return
+
+        equipe = clique.get('equipe') if isinstance(clique, dict) else clique
+
+        if equipe in ordem_equipes_construtores:
+            equipe_selecionada.set(equipe)
+
     @render_widget
     def grafico_h2h():
         placar, _detalhes = dados_h2h()
@@ -441,16 +478,7 @@ def resultados_home_server(input, output, session, df, df_tabela_classificacao,
             barmode='relative',
         )
 
-        widget = go.FigureWidget(fig)
-
-        def _ao_clicar(trace, points, state):
-            if points.point_inds:
-                equipe = trace.y[points.point_inds[0]]
-                equipe_selecionada.set(equipe)
-
-        widget.data[0].on_click(_ao_clicar)
-        widget.data[1].on_click(_ao_clicar)
-        return widget
+        return go.FigureWidget(fig)
 
     @render.ui
     def h2h_detalhes():
@@ -458,8 +486,7 @@ def resultados_home_server(input, output, session, df, df_tabela_classificacao,
         if not equipe:
             return ui.div(
                 ui.p(
-                    "Clique em uma barra para ver as estatísticas "
-                    "detalhadas da dupla.",
+                    "Não há dados disponíveis para esta sessão.",
                     class_="text-muted",
                 ),
                 class_="h2h-detalhes-vazio",
