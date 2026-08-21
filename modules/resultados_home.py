@@ -425,6 +425,7 @@ def resultados_home_server(input, output, session, df, df_tabela_classificacao,
                 xanchor='center',
                 yanchor='middle',
                 showarrow=False,
+                captureevents=False,
                 font=dict(color='#ffffff', size=11),
             ))
             annotations.append(dict(
@@ -434,6 +435,7 @@ def resultados_home_server(input, output, session, df, df_tabela_classificacao,
                 xanchor='center',
                 yanchor='middle',
                 showarrow=False,
+                captureevents=False,
                 font=dict(color='#ffffff', size=11),
             ))
 
@@ -482,6 +484,7 @@ def resultados_home_server(input, output, session, df, df_tabela_classificacao,
             # seleção ou hover interativo.
             dragmode=False,
             hovermode=False,
+            clickmode='event',
             modebar=dict(
                 orientation='v',
                 bgcolor='rgba(21, 21, 30, 0.85)',
@@ -503,7 +506,13 @@ def resultados_home_server(input, output, session, df, df_tabela_classificacao,
             barmode='relative',
         )
 
-        return go.FigureWidget(fig)
+        widget = go.FigureWidget(fig)
+        widget._config.update({
+            'doubleClick': False,
+            'scrollZoom': False,
+            'displayModeBar': False,
+        })
+        return widget
 
     @render.ui
     def h2h_detalhes():

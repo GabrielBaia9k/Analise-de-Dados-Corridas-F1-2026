@@ -586,6 +586,14 @@ select.shiny-input-select option {
     padding-top: 0;
 }
 
+.h2h-layout .grafico-container,
+.h2h-layout .grafico-container .js-plotly-plot,
+.h2h-layout .grafico-container .plotly-graph-div {
+    position: relative;
+    z-index: 1;
+    pointer-events: auto !important;
+}
+
 .h2h-detalhes {
     margin-top: 0;
 }

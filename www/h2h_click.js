@@ -27,7 +27,7 @@
 
         // Plotly pode ainda não ter sido inicializado no elemento recém-inserido
         // (ex.: troca de aba). Tenta novamente a cada frame até ficar pronto.
-        if (typeof graph.on !== "function") {
+        if (typeof graph.on !== "function" || !graph._fullLayout) {
             if (frames < RETRY_FRAME_LIMIT) {
                 requestAnimationFrame(() => bindPlotlyGraph(graph, frames + 1));
             }
@@ -73,6 +73,7 @@
 
     function initialize() {
         bindH2HGraphs();
+        requestAnimationFrame(bindH2HGraphs);
         observer.observe(document.body, {
             childList: true,
             subtree: true,
