@@ -1,5 +1,3 @@
-import json
-
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
@@ -11,6 +9,8 @@ from utils.team_colors import TEAM_COLOR_MAP
 from utils.cumulative_data import build_cumulative_construtores
 from utils.head_to_head import build_h2h
 from utils.country_flags import build_flag_path
+from utils.driver_headshots import headshot_src
+from utils.circuit_layouts import layout_src, proxima_corrida, TOTAL_CORRIDAS
 
 
 def _clarear_cor(cor: str, fator: float = 0.45) -> str:
@@ -44,6 +44,13 @@ def calcular_classificacao_construtores(df: pd.DataFrame) -> pd.DataFrame:
 @module.ui
 def resultados_home_ui():
     return ui.div(
+        ui.layout_columns(
+            ui.output_ui("vb_pilotos"),
+            ui.output_ui("vb_equipes"),
+            ui.output_ui("vb_proxima_corrida"),
+            col_widths=[4, 4, 4],
+            class_="valueboxes-layout",
+        ),
         ui.layout_columns(
             ui.div(
                 ui.div(
@@ -85,10 +92,6 @@ def resultados_home_ui():
                     ui.nav_panel("Sprint Qualy", value="sprint_qualy"),
                     id="h2h_sessao",
                 ),
-                ui.div(
-                    ui.input_text("h2h_clique", label="", value=""),
-                    class_="h2h-oculto",
-                ),
                 ui.layout_columns(
                     ui.div(
                         output_widget("grafico_h2h"),
@@ -125,12 +128,70 @@ def resultados_home_server(input, output, session, df, df_tabela_classificacao,
     df_pilotos['Equipe'] = ""
     df_construtores['Equipe'] = ""
 
+    lider_pilotos = df_pilotos.iloc[0]
+    lider_equipe_nome = ordem_equipes_construtores[0]
+    lider_equipe_pontos = df_construtores.iloc[0]['Pontos']
+
+    @render.ui
+    def vb_pilotos():
+        nome = lider_pilotos['Piloto']
+        pontos = lider_pilotos['Pontos']
+        return ui.value_box(
+            "Líder de Pilotos",
+            nome,
+            f"{float(pontos):g} pts",
+            showcase=ui.img(
+                src=headshot_src(nome),
+                class_="vb-headshot",
+            ),
+            theme=ui.value_box_theme(fg="#ffffff", bg="#1a1a26"),
+            class_="valuebox-f1",
+        )
+
+    @render.ui
+    def vb_equipes():
+        return ui.value_box(
+            "Líder de Equipes",
+            lider_equipe_nome,
+            f"{float(lider_equipe_pontos):g} pts",
+            showcase=ui.img(
+                src=f'{LOGO_DIR}/{TEAM_LOGO_MAP[lider_equipe_nome]}',
+                class_="vb-logo",
+            ),
+            theme=ui.value_box_theme(fg="#ffffff", bg="#1a1a26"),
+            class_="valuebox-f1",
+        )
+
+    @render.ui
+    def vb_proxima_corrida():
+        proxima = proxima_corrida(df['Track'].unique())
+        if not proxima:
+            return ui.value_box(
+                "Próxima Corrida",
+                "Temporada encerrada",
+                theme=ui.value_box_theme(fg="#ffffff", bg="#1a1a26"),
+                class_="valuebox-f1",
+            )
+        track, rodada = proxima
+        return ui.value_box(
+            "Próxima Corrida",
+            track,
+            f"Rodada {rodada} de {TOTAL_CORRIDAS}",
+            showcase=ui.img(
+                src=layout_src(track),
+                class_="vb-layout",
+            ),
+            theme=ui.value_box_theme(fg="#ffffff", bg="#1a1a26"),
+            class_="valuebox-f1",
+        )
+
     @render.data_frame
     def tabela_classificacao():
         return render.DataGrid(
             df_pilotos,
             styles=pilotos_styles,
             summary=False,
+            width='100%', 
         )
 
     @render.data_frame
@@ -139,6 +200,7 @@ def resultados_home_server(input, output, session, df, df_tabela_classificacao,
             df_construtores,
             styles=construtores_styles,
             summary=False,
+            width='100%', 
         )
 
     @render_widget
@@ -309,25 +371,6 @@ def resultados_home_server(input, output, session, df, df_tabela_classificacao,
 
         equipe_selecionada.set(primeira_equipe)
 
-    @reactive.effect
-    @reactive.event(input.h2h_clique)
-    def atualizar_equipe_clicada():
-        clique = input.h2h_clique()
-
-        if not clique:
-            return
-
-        if isinstance(clique, str):
-            try:
-                clique = json.loads(clique)
-            except json.JSONDecodeError:
-                clique = {'equipe': clique}
-
-        equipe = clique.get('equipe') if isinstance(clique, dict) else clique
-
-        if equipe in ordem_equipes_construtores:
-            equipe_selecionada.set(equipe)
-
     @render_widget
     def grafico_h2h():
         placar, _detalhes = dados_h2h()
@@ -480,10 +523,9 @@ def resultados_home_server(input, output, session, df, df_tabela_classificacao,
                 title=None,
                 showspikes=False,
             ),
-            # O gráfico permanece clicável nas barras, mas sem pan, zoom,
-            # seleção ou hover interativo.
+            # O gráfico permanece clicável nas barras, mas sem pan, zoom ou seleção.
             dragmode=False,
-            hovermode=False,
+            hovermode='closest',
             clickmode='event',
             modebar=dict(
                 orientation='v',
@@ -507,6 +549,15 @@ def resultados_home_server(input, output, session, df, df_tabela_classificacao,
         )
 
         widget = go.FigureWidget(fig)
+
+        def ao_clicar(trace, points, _state):
+            if points.point_inds:
+                equipe = trace.y[points.point_inds[0]]
+                equipe_selecionada.set(str(equipe))
+
+        widget.data[0].on_click(ao_clicar)
+        widget.data[1].on_click(ao_clicar)
+
         widget._config.update({
             'doubleClick': False,
             'scrollZoom': False,

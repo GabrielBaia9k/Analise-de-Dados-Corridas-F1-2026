@@ -40,11 +40,11 @@ def build_h2h(df: pd.DataFrame, sessao: str) -> tuple[pd.DataFrame, dict]:
         metricas = [
             {'key': 'vitorias', 'label': 'Vitórias no duelo', 'invert': False},
             {'key': 'pct_vitorias', 'label': '% do duelo', 'invert': False},
+            {'key': 'pontos', 'label': 'Pontos', 'invert': False},
+            {'key': 'podios', 'label': 'Pódios', 'invert': False},
             {'key': 'media_pos', 'label': 'Média de posição', 'invert': True},
             {'key': 'melhor_pos', 'label': 'Melhor posição', 'invert': True},
-            {'key': 'podios', 'label': 'Pódios', 'invert': False},
             {'key': 'vitorias_corridas', 'label': 'Vitórias', 'invert': False},
-            {'key': 'pontos', 'label': 'Pontos', 'invert': False},
             {'key': 'media_grid', 'label': 'Média de grid', 'invert': True},
             {'key': 'dnf', 'label': 'Abandonos', 'invert': True},
         ]

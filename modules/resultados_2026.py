@@ -18,8 +18,12 @@ def resultados_2026_ui(tracks=None):
         ),
         
         ui.div(
-            ui.output_data_frame("tabela_resultados"),
-            class_="tabela-classificacao",       # ← coluna Position estreita
+            ui.h4("Resultados da Corrida", class_="classificacao-titulo"),
+            ui.div(
+                ui.output_data_frame("tabela_resultados"),
+                class_="tabela-sem-scroll",
+            ),
+            class_="classificacao-card",
         ),
         style="padding: 20px;"
     )
@@ -58,16 +62,20 @@ def resultados_2026_server(input, output, session, df):
             "cols": [0],
             "style": {
                 "text-align": "center",
+                "width": "55px",
+                "min-width": "55px",
+                "max-width": "55px",
             },
         }]
-        
+
         styles = narrow_pos + team_styles
-        
+
         # Zera nome do time (logo entra via CSS background-image)
         df_atual['Equipe'] = ""
-        
+
         return render.DataGrid(
             df_atual,
             styles=styles,
             summary=False,
+            height='fit-content',
         )
