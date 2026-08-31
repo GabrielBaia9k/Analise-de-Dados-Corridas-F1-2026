@@ -5,11 +5,12 @@ __pycache__/
 *.pyc
 *.pyo
 tui.json
+rsconnect-python/
 
 # Dados gerados pelo dashboard
 Dados Gerados/
 data/Dados Gerados/
-rsconnect-python/
+
 
 # Estados de ferramentas
 .ipynb_checkpoints/
