@@ -1,0 +1,26 @@
+circuit_id,name,location,country,latitude,longitude,altitude_m,length_km,turns,drs_zones,aerodynamic_demand,power_demand,grip_level,tire_wear,direction,type
+1,Albert Park Circuit,Melbourne,Australia,-37.8497,144.968,10,5.278,14,4,Medium,Medium,Medium,Medium,Clockwise,Street
+2,Shanghai International Circuit,Shanghai,China,31.3389,121.22,7,5.451,16,2,High,High,Medium,High,Clockwise,Permanent
+3,Suzuka International Racing Course,Suzuka,Japan,34.8431,136.541,43,5.807,18,1,Extreme,High,High,High,Figure-8,Permanent
+4,Bahrain International Circuit,Sakhir,Bahrain,26.0325,50.5106,-15,5.412,15,3,Medium,High,High,Extreme,Clockwise,Permanent
+5,Jeddah Corniche Circuit,Jeddah,Saudi Arabia,21.6319,39.1044,15,6.174,27,3,Low,Extreme,High,Medium,Counter-Clockwise,Street
+6,Miami International Autodrome,Miami,USA,25.9581,-80.2389,3,5.412,19,3,Medium,High,Medium,Medium,Counter-Clockwise,Hybrid
+7,Circuit Gilles Villeneuve,Montreal,Canada,45.5005,-73.5228,13,4.361,14,3,Low,High,Low,Medium,Clockwise,Semi-Permanent
+8,Circuit de Monaco,Monte Carlo,Monaco,43.7347,7.4206,48,3.337,19,1,Maximum,Low,Very Low,Low,Clockwise,Street
+9,Circuit de Barcelona-Catalunya,Montmeló,Spain,41.57,2.2611,120,4.657,14,2,High,Medium,High,High,Clockwise,Permanent
+10,Red Bull Ring,Spielberg,Austria,47.2197,14.7647,677,4.318,10,3,Medium,High,Medium,Medium,Clockwise,Permanent
+11,Silverstone Circuit,Silverstone,UK,52.0786,-1.01694,153,5.891,18,2,Extreme,High,High,High,Clockwise,Permanent
+12,Circuit de Spa-Francorchamps,Stavelot,Belgium,50.4372,5.9714,435,7.004,19,2,Medium,Extreme,Medium,Medium,Clockwise,Permanent
+13,Hungaroring,Mogyoród,Hungary,47.5831,19.2486,232,4.381,14,2,Maximum,Low,Medium,Medium,Clockwise,Permanent
+14,Circuit Zandvoort,Zandvoort,Netherlands,52.3888,4.5408,8,4.259,14,2,High,Low,High,High,Clockwise,Permanent
+15,Autodromo Nazionale Monza,Monza,Italy,45.6156,9.2811,162,5.793,11,2,Minimum,Extreme,Low,Medium,Clockwise,Permanent
+16,Circuito de Madring (Madrid),Madrid,Spain,40.465,-3.618,660,5.47,22,2,Medium,High,Low,Medium,Clockwise,Hybrid
+17,Baku City Circuit,Baku,Azerbaijan,40.3725,49.8533,-24,6.003,20,2,Low,Extreme,Low,Medium,Counter-Clockwise,Street
+18,Marina Bay Street Circuit,Singapore,Singapore,1.2914,103.864,2,4.94,19,4,Maximum,Low,Low,High,Counter-Clockwise,Street
+19,Circuit of the Americas,Austin,USA,30.1328,-97.6411,161,5.513,20,2,High,High,High,High,Counter-Clockwise,Permanent
+20,Autódromo Hermanos Rodríguez,Mexico City,Mexico,19.4042,-99.0907,2240,4.304,17,3,Maximum,Extreme,Low,Medium,Clockwise,Permanent
+21,Autódromo José Carlos Pace (Interlagos),São Paulo,Brazil,-23.7036,-46.6997,785,4.309,15,2,High,High,Medium,Medium,Counter-Clockwise,Permanent
+22,Las Vegas Strip Circuit,Las Vegas,USA,36.1162,-115.163,610,6.201,17,2,Minimum,Extreme,Low,Low,Counter-Clockwise,Street
+23,Lusail International Circuit,Lusail,Qatar,25.4883,51.4542,12,5.419,16,1,Extreme,High,High,High,Clockwise,Permanent
+24,Yas Marina Circuit,Abu Dhabi,UAE,24.4672,54.6031,3,5.281,16,2,Medium,Medium,Medium,Medium,Counter-Clockwise,Permanent
+25,Autodromo Enzo e Dino Ferrari (Imola),Imola,Italy,44.3439,11.7167,41,4.909,19,1,High,Medium,High,Medium,Counter-Clockwise,Permanent

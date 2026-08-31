@@ -7,7 +7,7 @@ import pandas as pd
 
 from shiny import App, ui, render
 from modules.resultados_home import resultados_home_ui, resultados_home_server
-from modules.resultados_2026 import resultados_2026_ui, resultados_2026_server
+from modules.corridas_2026 import corridas_2026_ui, corridas_2026_server
 
 os.environ["NO_PROXY"] = "localhost,127.0.0.1,::1"
 
@@ -61,7 +61,7 @@ app_ui = ui.page_sidebar(
             label="",
             choices={
                 "home": "Classificação",
-                "resultados_2026": "Corridas",
+                "corridas_2026": "Corridas",
                 "Pilotos": "Pilotos",
                 "Equipes": "Equipes",
                 "Sobre": "Sobre"
@@ -83,8 +83,8 @@ def server(input, output, session):
     def conteudo_pagina():
         if input.navegacao() == "home":
             return resultados_home_ui("home")
-        elif input.navegacao() == "resultados_2026":
-            return resultados_2026_ui("resultados_2026", tracks)
+        elif input.navegacao() == "corridas_2026":
+            return corridas_2026_ui("corridas_2026", tracks)
         return ui.p("Página não encontrada")
 
     resultados_home_server(
@@ -96,6 +96,6 @@ def server(input, output, session):
         df_qualy,
         df_sprint_qualy,
     )
-    resultados_2026_server("resultados_2026", df_resultados)  # ← só corridas
+    corridas_2026_server("corridas_2026", df_resultados)  # ← só corridas
 
 app = App(app_ui, server, static_assets=os.path.join(os.path.dirname(__file__), "www"))

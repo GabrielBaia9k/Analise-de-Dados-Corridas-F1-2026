@@ -4,7 +4,7 @@ from utils.team_logos import build_team_styles
 
 
 @module.ui
-def resultados_2026_ui(tracks=None):
+def corridas_2026_ui(tracks=None):
     choices = tracks if tracks else ["Carregando..."]
     return ui.div(
         ui.h2("Resultados - Temporada 2026"),
@@ -30,7 +30,7 @@ def resultados_2026_ui(tracks=None):
 
 
 @module.server
-def resultados_2026_server(input, output, session, df):
+def corridas_2026_server(input, output, session, df):
     
     @reactive.calc
     def df_filtrado():
