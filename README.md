@@ -1,3 +1,5 @@
+Um dashboard interativo em desenvolvimento para a temporada de 2026 de Formula 1, este trabalho é feito por um fan e não possui relação oficial nenhuma com a Formula 1.
+
 Antes de rodar leia requirements.txt para instalar os pacotes necessários
 
 Rode em localhost no powershell com: shiny run --reload main.py
