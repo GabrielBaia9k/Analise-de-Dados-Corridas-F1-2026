@@ -10,4 +10,4 @@ Rode em localhost no powershell com: shiny run --reload main.py
 
 Para fazer o deploy em shinyapps.io: rsconnect deploy shiny . --name "accountname" --title "dash-f1"
 
-acesse online em: kadran9k.shinyapps.io/dash-f11/
+acesse online em: https://kadran9k.shinyapps.io/dashboard_shiny_python/
