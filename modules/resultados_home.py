@@ -1,4 +1,4 @@
-import pandas as pd
+﻿import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 from shiny import ui, render, module, reactive
@@ -13,6 +13,7 @@ from utils.driver_headshots import headshot_src
 from utils.circuit_layouts import layout_src, proxima_corrida, TOTAL_CORRIDAS
 
 
+#todo: remover a função de clareamento de cor (usar alternativa nativa ao plotly se possível)
 def _clarear_cor(cor: str, fator: float = 0.45) -> str:
     """Clareia uma cor hex misturando com branco."""
     cor = cor.lstrip('#')
@@ -27,9 +28,7 @@ def _clarear_cor(cor: str, fator: float = 0.45) -> str:
 
 def obter_classificacao_pilotos(df_tabela: pd.DataFrame) -> pd.DataFrame:
     ultimo_snapshot = df_tabela[df_tabela['Ordem'] == df_tabela['Ordem'].max()]
-    classificacao = ultimo_snapshot[
-        ultimo_snapshot['Tipo'] == 'Piloto'
-    ][['Posição', 'Piloto', 'Equipe', 'Pontos']].copy()
+    classificacao = ultimo_snapshot[ultimo_snapshot['Tipo'] == 'Piloto'][['Posição', 'Piloto', 'Equipe', 'Pontos']].copy()
     return classificacao.sort_values('Posição').reset_index(drop=True)
 
 
